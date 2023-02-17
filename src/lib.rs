@@ -30,5 +30,6 @@ unsafe fn init(db: *mut c_void) -> Result<(), Box<dyn Error>> {
 /// Version hook for DuckDB, indicates which version of DuckDB this extension was compiled against
 #[no_mangle]
 pub extern "C" fn athenatable_version_rust() -> *const c_char {
+    println!("wtf");
     unsafe { duckdb_library_version() }
 }

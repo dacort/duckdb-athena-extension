@@ -9,6 +9,11 @@ if(ANDROID)
   set(Rust_CARGO_TARGET "aarch64-linux-android")
 endif()
 
+if (APPLE)
+  # POLICY CMP0042
+  set(CMAKE_MACOSX_RPATH 1)
+endif()
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -29,3 +34,9 @@ set(LIB_NAME ${TARGET_NAME}_loadable_extension)
 set_target_properties(${LIB_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${LIB_NAME}
                       "${CMAKE_CURRENT_BINARY_DIR}/lib${TARGET_NAME}.a")
+
+if (APPLE)
+        target_link_libraries(${LIB_NAME}
+                "-framework CoreFoundation"
+                "-framework Security")
+endif()

@@ -33,6 +33,7 @@ struct MyInitDataStruct {
 /// .
 #[no_mangle]
 unsafe extern "C" fn read_athena(info: duckdb_function_info, output: duckdb_data_chunk) {
+    println!("In read_athena");
     let info = FunctionInfo::from(info);
     let output = DataChunk::from(output);
 
@@ -42,6 +43,7 @@ unsafe extern "C" fn read_athena(info: duckdb_function_info, output: duckdb_data
     // To start - let's just do a SELECT * mmk, assuming "filename" is a table name
     let tablename = CStr::from_ptr((*bind_data).filename);
 
+    println!("Creating athena client");
     let config = block_on(aws_config::load_from_env());
     let client = Client::new(&config);
     let result_config = ResultConfiguration::builder()
@@ -49,6 +51,8 @@ unsafe extern "C" fn read_athena(info: duckdb_function_info, output: duckdb_data
         .build();
     
     let query = format!("SELECT * FROM {} LIMIT 10", tablename.to_str().unwrap());
+
+    println!("Running athena query");
     let athena_query = client
         .start_query_execution()
         .set_query_string(Some(query))
