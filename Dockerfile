@@ -12,4 +12,4 @@ RUN curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | bash -s -- -y
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
 
 
-WORKDIR /app/duckdb-athenatable-extension
+WORKDIR /app/duckdb-athena-extension

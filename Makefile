@@ -1,4 +1,4 @@
-.PHONY: all clean format debug release duckdb_debug duckdb_release pull update
+.PHONY: all clean build release update
 
 all: release
 
@@ -12,38 +12,27 @@ ifeq ($(GEN),ninja)
 	FORCE_COLOR=-DFORCE_COLORED_OUTPUT=1
 endif
 
-BUILD_FLAGS=-DEXTENSION_STATIC_BUILD=1 ${OSX_BUILD_UNIVERSAL_FLAG}
-
-pull:
-	git submodule init
-	# git submodule update --recursive --remote
+BUILD_FLAGS=-DEXTENSION_STATIC_BUILD=1  -DCLANG_TIDY=False ${OSX_BUILD_UNIVERSAL_FLAG}
 
 clean:
 	rm -rf build
 	cargo clean
 
-debug: pull
+# Debug build
+build:
 	mkdir -p build/debug && \
 	cd build/debug && \
 	cmake $(GENERATOR) $(FORCE_COLOR) -DCMAKE_BUILD_TYPE=Debug ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-athena-extension -B. && \
-	cmake --build . --config Debug
+	cmake --build . --config Debug -j
 
-release: pull
+
+release:
 	mkdir -p build/release && \
 	cd build/release && \
-	cmake $(GENERATOR) $(FORCE_COLOR) -DCMAKE_BUILD_TYPE=RelWithDebInfo ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-athena-extension -B. && \
+	cmake $(GENERATOR) $(FORCE_COLOR) -DCMAKE_BUILD_TYPE=Release ${BUILD_FLAGS} \
+		../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-athena-extension -B. && \
 	cmake --build . --config Release
 
-test_release: release
-	./build/release/test/unittest --test-dir . "[sql]"
-
-test/simple_table:
-	pip install pandas deltalake
-	mkdir test/simple_table
-	python3 populate.py
-
-test: debug
-	./build/debug/test/unittest --test-dir . "[sql]"
 
 update:
 	git submodule update --remote --merge

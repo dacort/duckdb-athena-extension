@@ -1,26 +1,31 @@
 #![allow(dead_code)]
-use duckdb_extension_framework::Database;
-use std::{
-    error::Error,
-    ffi::{c_char, c_void},
-};
+use duckdb_ext::Database;
+use std::ffi::c_char;
+use tokio::runtime::Runtime;
 
-use crate::table_function::build_table_function_def;
-use duckdb_extension_framework::duckly::duckdb_library_version;
-
+pub mod error;
 mod table_function;
 mod types;
+
+use crate::table_function::build_table_function_def;
+use duckdb_ext::ffi::{_duckdb_database, duckdb_library_version};
+use error::Result;
+
+lazy_static::lazy_static! {
+    static ref RUNTIME: Runtime = tokio::runtime::Runtime::new()
+            .expect("Creating Tokio runtime");
+}
 
 /// Init hook for DuckDB, registers all functionality provided by this extension
 /// # Safety
 /// .
 #[no_mangle]
-pub unsafe extern "C" fn athenatable_init_rust(db: *mut c_void) {
+pub unsafe extern "C" fn athena_init_rust(db: *mut _duckdb_database) {
     init(db).expect("init failed");
 }
 
-unsafe fn init(db: *mut c_void) -> Result<(), Box<dyn Error>> {
-    let db = Database::from_cpp_duckdb(db);
+unsafe fn init(db: *mut _duckdb_database) -> Result<()> {
+    let db = Database::from(db);
     let table_function = build_table_function_def();
     let connection = db.connect()?;
     connection.register_table_function(table_function)?;
@@ -29,7 +34,6 @@ unsafe fn init(db: *mut c_void) -> Result<(), Box<dyn Error>> {
 
 /// Version hook for DuckDB, indicates which version of DuckDB this extension was compiled against
 #[no_mangle]
-pub extern "C" fn athenatable_version_rust() -> *const c_char {
-    println!("wtf");
+pub extern "C" fn athena_version_rust() -> *const c_char {
     unsafe { duckdb_library_version() }
 }
