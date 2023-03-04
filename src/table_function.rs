@@ -39,7 +39,6 @@ struct ScanBindData {
     /// Athena table name and query result output location
     tablename: *mut c_char,
     output_location: *mut c_char,
-    limit: *mut i32,
 }
 
 impl ScanBindData {
