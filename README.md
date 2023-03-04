@@ -48,7 +48,7 @@ load 'build/debug/extension/duckdb-athena-extension/athena.duckdb_extension';
 select * from athena_scan('table_name', 's3://<bucket>/athena-results/);
 ```
 
-> **Note**: Pagination is not yet implemented, so only 1,000 rows are returned
+> **Warning**: All results will be returned from your table!
 
 ```
 D select * from athena_scan("amazon_reviews_parquet");
