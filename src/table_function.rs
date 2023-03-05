@@ -2,7 +2,10 @@ use anyhow::{anyhow, Result};
 use aws_sdk_athena::model::ResultSetMetadata;
 use aws_sdk_athena::types::SdkError;
 use aws_sdk_athena::{error::GetQueryResultsError, model::Row};
+use aws_sdk_glue::model::Logical;
 use futures::{executor::block_on, Stream};
+use std::os::fd::IntoRawFd;
+use std::ptr::null;
 use std::{
     ffi::{c_void, CStr, CString},
     os::raw::c_char,
@@ -39,7 +42,10 @@ struct ScanBindData {
     /// Athena table name and query result output location
     tablename: *mut c_char,
     output_location: *mut c_char,
+    limit: i32,
 }
+
+const DEFAULT_LIMIT: i32 = 10000;
 
 impl ScanBindData {
     fn new(tablename: &str, output_location: &str) -> Self {
@@ -48,6 +54,7 @@ impl ScanBindData {
             output_location: CString::new(output_location)
                 .expect("S3 output location")
                 .into_raw(),
+            limit: DEFAULT_LIMIT as i32,
         }
     }
 }
@@ -59,6 +66,7 @@ unsafe extern "C" fn drop_scan_bind_data_c(v: *mut c_void) {
     let actual = v.cast::<ScanBindData>();
     drop(CString::from_raw((*actual).tablename.cast()));
     drop(CString::from_raw((*actual).output_location.cast()));
+    drop((*actual).limit);
     duckdb_free(v);
 }
 
@@ -159,7 +167,7 @@ pub fn result_set_to_duckdb_data_chunk(
 ) -> Result<()> {
     // Fill the row
     // This is asserting the wrong thing (row length vs. column length)
-    // assert_eq!(rs.rows().unwrap().len(), chunk.num_columns());
+    // assert!_eq!(rs.rows().unwrap().len(), chunk.num_columns());
     // let rows = &rs.rows().unwrap()[1..];
     let result_size = rows.len();
 
@@ -228,10 +236,16 @@ async fn get_query_result_paginator(
 #[no_mangle]
 unsafe extern "C" fn read_athena_bind(bind_info: duckdb_bind_info) {
     let bind_info = BindInfo::from(bind_info);
-    assert_eq!(bind_info.num_parameters(), 2);
+    assert!(bind_info.num_parameters()>= 2);
 
     let tablename = bind_info.parameter(0);
     let output_location = bind_info.parameter(1);
+    let maxrows = bind_info.named_parameter("maxrows");
+    // let maxrowsd = bind_info.named_parameter("maxrowsd");
+    // println!("Maxrowsd is: {:?}", maxrowsd);
+
+    // How oh how to get named parameters? I don't know!
+    // But postgres does https://github.com/duckdblabs/postgres_scanner/blob/main/postgres_scanner.cpp#LL1059C18-L1059C23
 
     // Table name is the first param that's getting passed in
     // We need to go to the Glue Data Catalog and fetch the column tables for that table.
@@ -278,6 +292,13 @@ unsafe extern "C" fn read_athena_bind(bind_info: duckdb_bind_info) {
             .expect("S3 output location")
             .into_raw();
 
+        if !maxrows.is_null() {
+            let lv = maxrows.to_string().parse::<i32>().unwrap();
+            (*bind_data).limit = lv;
+        } else {
+            (*bind_data).limit = DEFAULT_LIMIT;
+        }
+
         bind_info.set_bind_data(bind_data.cast(), Some(drop_scan_bind_data_c));
     }
 }
@@ -297,6 +318,7 @@ unsafe extern "C" fn read_athena_init(info: duckdb_init_info) {
     let output_location = CStr::from_ptr((*bind_info).output_location)
         .to_str()
         .unwrap();
+    let maxrows = (*bind_info).limit;
 
     let config = block_on(aws_config::load_from_env());
     let client = AthenaClient::new(&config);
@@ -304,7 +326,10 @@ unsafe extern "C" fn read_athena_init(info: duckdb_init_info) {
         .set_output_location(Some(output_location.to_owned()))
         .build();
 
-    let query = format!("SELECT * FROM {}", tablename);
+    let mut query = format!("SELECT * FROM {}", tablename);
+    if maxrows >= 0 {
+        query = format!("{} LIMIT {}", query, maxrows);
+    }
 
     let athena_query = client
         .start_query_execution()
@@ -383,8 +408,12 @@ unsafe extern "C" fn read_athena_init(info: duckdb_init_info) {
 pub fn build_table_function_def() -> TableFunction {
     let table_function = TableFunction::new("athena_scan");
     let logical_type = LogicalType::new(LogicalTypeId::Varchar);
+    let int_type = LogicalType::new(LogicalTypeId::Integer);
     table_function.add_parameter(&logical_type);
     table_function.add_parameter(&logical_type);
+    // table_function.add_parameter(&int_type);
+    // For some reason, we can't use limit here...
+    table_function.add_named_parameter("maxrows", &int_type);
 
     table_function.set_function(Some(read_athena));
     table_function.set_init(Some(read_athena_init));
