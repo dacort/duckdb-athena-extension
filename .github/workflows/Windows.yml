@@ -7,6 +7,8 @@ defaults:
   run:
     shell: bash
 
+# TODO: checkout duckdb-ext/duckdb
+
 jobs:
   windows:
     name: Release
@@ -34,6 +36,8 @@ jobs:
         if: ${{ matrix.duckdb_version != '<submodule_version>'}}
         run: |
           cd duckdb
+          git checkout ${{ matrix.duckdb_version }}
+          cd duckdb-ext/duckdb
           git checkout ${{ matrix.duckdb_version }}
 
       - name: Build extension

@@ -41,6 +41,8 @@ jobs:
         run: |
           cd duckdb
           git checkout ${{ matrix.duckdb_version }}
+          cd duckdb-ext/duckdb
+          git checkout ${{ matrix.duckdb_version }}
 
          # Build extension
       - name: Build extension
