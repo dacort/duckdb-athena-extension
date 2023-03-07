@@ -42,6 +42,7 @@ jobs:
 
       - name: Build extension
         run: |
+          cargo build
           make release
           build/release/test/Release/unittest.exe
 

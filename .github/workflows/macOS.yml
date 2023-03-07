@@ -48,6 +48,7 @@ jobs:
       - name: Build extension
         shell: bash
         run: |
+          cargo build
           make release
           make test
 
