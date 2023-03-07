@@ -76,7 +76,7 @@ jobs:
       run: |
         cd duckdb
         git apply ../duckdb-namedparams.patch
-        cd duckdb-ext/duckdb
+        cd ../duckdb-ext/duckdb
         git apply ../../duckdb-namedparams.patch
 
     - if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
