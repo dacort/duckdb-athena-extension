@@ -72,6 +72,13 @@ jobs:
         cd duckdb-ext/duckdb
         git checkout ${{ matrix.duckdb_version }}
 
+    - name: Patch DuckDB with named parameter support
+      run: |
+        cd duckdb
+        git apply duckdb-namedparams.patch
+        cd duckdb-ext/duckdb
+        git apply duckdb-namedparams.patch
+
     - if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
       uses: ./duckdb/.github/actions/centos_7_setup
       with:
@@ -90,7 +97,6 @@ jobs:
         CC: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-gcc' || '' }}
         CXX: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-g++' || '' }}
       run: |
-        cargo build
         make release
 
     - name: Build extension
