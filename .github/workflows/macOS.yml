@@ -49,7 +49,7 @@ jobs:
           cd duckdb
           git apply ../duckdb-namedparams.patch
           cd duckdb-ext/duckdb
-          git apply ../duckdb-namedparams.patch
+          git apply ../../duckdb-namedparams.patch
 
          # Build extension
       - name: Build extension

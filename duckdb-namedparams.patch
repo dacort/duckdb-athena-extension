@@ -1,3 +1,14 @@
+From 5f8ba2ba0c139b69aa34c316471be74877e234e8 Mon Sep 17 00:00:00 2001
+From: "Damon P. Cortesi" <d.lifehacker@gmail.com>
+Date: Sat, 4 Mar 2023 16:21:03 -0800
+Subject: [PATCH] Add support for named paramters in the API
+
+---
+ src/include/duckdb.h                   | 21 +++++++++++++++++++++
+ src/main/capi/table_function-c.cpp     | 23 +++++++++++++++++++++++
+ test/api/capi/capi_table_functions.cpp |  9 +++++++++
+ 3 files changed, 53 insertions(+)
+
 diff --git a/src/include/duckdb.h b/src/include/duckdb.h
 index 3c75c42b1c0..93219e0e123 100644
 --- a/src/include/duckdb.h
