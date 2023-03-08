@@ -40,7 +40,32 @@ jobs:
         apt-get install -y -qq software-properties-common
         add-apt-repository ppa:git-core/ppa
         apt-get update -y -qq
-        apt-get install -y -qq ninja-build make gcc-multilib g++-multilib libssl-dev wget openjdk-8-jdk zip maven unixodbc-dev libc6-dev-i386 lib32readline6-dev libssl-dev libcurl4-gnutls-dev libexpat1-dev gettext unzip build-essential checkinstall libffi-dev curl libz-dev openssh-client libclang-dev
+        apt-get install -y -qq \
+          build-essential \
+          checkinstall \
+          clang \
+          curl \
+          g++-multilib \
+          gcc-multilib \
+          gettext \
+          lib32readline6-dev \
+          libc6-dev-i386 \
+          libclang-dev \
+          libcurl4-gnutls-dev \
+          libexpat1-dev \
+          libffi-dev \
+          libssl-dev \
+          libssl-dev \
+          libz-dev \
+          make \
+          maven \
+          ninja-build \
+          openjdk-8-jdk \
+          openssh-client \
+          unixodbc-dev \
+          unzip \
+          wget \
+          zip
 
     - name: Install latest nightly rust toolchain
       uses: actions-rs/toolchain@v1
