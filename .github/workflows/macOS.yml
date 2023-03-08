@@ -20,7 +20,7 @@ jobs:
         duckdb_version: [ '<submodule_version>' ]
 
     env:
-      OSX_BUILD_UNIVERSAL: 1
+      OSX_BUILD_UNIVERSAL: 0
       GEN: ninja
 
     steps:
