@@ -21,7 +21,7 @@ jobs:
       matrix:
         # Add commits/tags to build against other DuckDB versions
         duckdb_version: [ '<submodule_version>' ]
-        arch: ['linux_amd64', 'linux_arm64', 'linux_amd64_gcc4']
+        arch: ['linux_amd64', 'linux_arm64'] # , 'linux_amd64_gcc4'
         include:
           - arch: 'linux_amd64'
             container: 'ubuntu:16.04'
@@ -66,12 +66,6 @@ jobs:
           unzip \
           wget \
           zip
-
-    - name: Install required ubuntu packages
-      if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
-      run: |
-        apt-get update -y -qq
-        apt-get install -y -qq libclang-dev
 
     - name: Install latest nightly rust toolchain
       uses: actions-rs/toolchain@v1
