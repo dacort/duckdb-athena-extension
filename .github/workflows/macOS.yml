@@ -58,6 +58,7 @@ jobs:
           OSX_BUILD_AARCH64: ${{ matrix.arch == 'arm64' && 1 || 0 }}
         shell: bash
         run: |
+          if [[ "$OSX_BUILD_AARCH64" == "1" ]]; then rustup target add --toolchain aarch64-apple-darwin; fi
           make release
 
       - name: configure aws credentials
