@@ -27,6 +27,7 @@ set(EXTENSION_NAME athena)
 if (APPLE)
   # POLICY CMP0042
   set(CMAKE_MACOSX_RPATH 1)
+  SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
 endif()
 
 include(FetchContent)
