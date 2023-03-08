@@ -18,6 +18,7 @@ jobs:
       matrix:
         # Add commits/tags to build against other DuckDB versions
         duckdb_version: [ '<submodule_version>' ]
+        arch: ['amd64', 'arm64']
 
     env:
       OSX_BUILD_UNIVERSAL: 0
@@ -53,6 +54,8 @@ jobs:
 
          # Build extension
       - name: Build extension
+        env:
+          OSX_BUILD_AARCH64_FLAG: ${{ matrix.arch == 'arm64' && '1' || '0' }}
         shell: bash
         run: |
           make release
@@ -79,10 +82,8 @@ jobs:
             echo 'No bucket set, skipping'
           elif [[ "$GITHUB_REF" =~ ^(refs/tags/v.+)$ ]] ; then
             python -m pip install awscli
-            ./scripts/extension-upload.sh athena ${{ github.ref_name }} $DUCKDB_VERSION osx_amd64 $BUCKET_NAME true
-            ./scripts/extension-upload.sh athena ${{ github.ref_name }} $DUCKDB_VERSION osx_arm64 $BUCKET_NAME true
+            ./scripts/extension-upload.sh athena ${{ github.ref_name }} $DUCKDB_VERSION osx_${{matrix.arch}} $BUCKET_NAME true
           elif [[ "$GITHUB_REF" =~ ^(refs/heads/main)$ ]] ; then
             python -m pip install awscli
-            ./scripts/extension-upload.sh athena `git log -1 --format=%h` $DUCKDB_VERSION osx_amd64 $BUCKET_NAME false
-            ./scripts/extension-upload.sh athena `git log -1 --format=%h` $DUCKDB_VERSION osx_arm64 $BUCKET_NAME false
+            ./scripts/extension-upload.sh athena `git log -1 --format=%h` $DUCKDB_VERSION osx_${{matrix.arch}} $BUCKET_NAME false
           fi

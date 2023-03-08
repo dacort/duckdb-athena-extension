@@ -27,7 +27,16 @@ set(EXTENSION_NAME athena)
 if (APPLE)
   # POLICY CMP0042
   set(CMAKE_MACOSX_RPATH 1)
-  SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+  # I think this is automatically handled by the duckdb Makefile/CMakefiles
+#   SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+endif()
+
+option(OSX_BUILD_AARCH64 "Build aarch64/arm64 binary on OSX." FALSE)
+if (OSX_BUILD_AARCH64)
+  if (NOT APPLE)
+    error("This only makes sense on OSX")
+  endif()
+  set(Rust_CARGO_TARGET "aarch64-apple-darwin")
 endif()
 
 include(FetchContent)
@@ -45,6 +54,10 @@ FetchContent_MakeAvailable(Corrosion)
 
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/duckdb/src/include)
+
+# Now again for aarch64/arm64
+# set(Rust_CARGO_TARGET "aarch64-apple-darwin")
+# corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml)
 
 set(ALL_SOURCES src/extension.c src/extension.h)
 
