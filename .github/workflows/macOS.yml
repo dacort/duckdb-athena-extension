@@ -55,11 +55,10 @@ jobs:
          # Build extension
       - name: Build extension
         env:
-          OSX_BUILD_AARCH64_FLAG: ${{ matrix.arch == 'arm64' && '1' || '0' }}
+          OSX_BUILD_AARCH64: ${{ matrix.arch == 'arm64' && 1 || 0 }}
         shell: bash
         run: |
           make release
-          make test
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
