@@ -49,7 +49,7 @@ jobs:
 
       - name: Build extension
         run: |
-          echo %INCLUDE%
+          dir duckdb-ext/duckdb/src/include
           make release
 
       - uses: actions/upload-artifact@v2
