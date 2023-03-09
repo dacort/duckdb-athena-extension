@@ -49,8 +49,8 @@ jobs:
 
       - name: Build extension
         run: |
+          echo %INCLUDE%
           make release
-          build/release/test/Release/unittest.exe
 
       - uses: actions/upload-artifact@v2
         with:
