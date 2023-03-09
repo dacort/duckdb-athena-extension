@@ -46,7 +46,7 @@ select * from athena_scan("noaa_gsod_pds", "s3://results-bucket/prefix", maxrows
 
 Filter pushdown is not yet supported so the extension will scan the entire table.
 
-> **Note* The extension uses your environment variables to figure out region and credentials. Make sure to gave your access key/secret set.
+> **Note** The extension uses your environment variables to figure out region and credentials. Make sure to have your access key/secret set.
 
 ## Development
 
