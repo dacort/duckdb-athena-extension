@@ -11,6 +11,45 @@
 
 ## Getting started
 
+The Athena extension is supported in DuckDB v0.7.0 and up. To install the extension, start duckdb with the `unsigned` parameter.
+
+```
+> duckdb -unsigned
+v0.7.1 b00b93f0b1
+D 
+```
+
+The first time you use the extension, you need to install it from a custom repository. 
+
+```
+SET custom_extension_repository='d2j9pg7mqm9we6.cloudfront.net/athena/latest';
+INSTALL athena;
+```
+
+Then LOAD the extension. You only need to run the INSTALL command once.
+
+```
+LOAD athena;
+```
+
+You can now extract data from tables in your default data catalog.
+
+```
+select * from athena_scan("noaa_gsod_pds", "s3://results-bucket/prefix");
+```
+
+> **Warning** To prevent runaway queries, the extension only returns 10,000 rows by default. If you'd like to return everything, you can add `maxrows=-1` as a parameter inside the function.
+
+```
+select * from athena_scan("noaa_gsod_pds", "s3://results-bucket/prefix", maxrows=-1);
+```
+
+Filter pushdown is not yet supported so the extension will scan the entire table.
+
+> **Note* The extension uses your environment variables to figure out region and credentials. Make sure to gave your access key/secret set.
+
+## Development
+
 - Clone the repo with submodules
 
 ```bash
