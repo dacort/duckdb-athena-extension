@@ -31,7 +31,7 @@ fn main() {
 
     cc::Build::new()
         .include(duckdb_include)
-        .include("src/include")
+        .include("duckdb/src/include") // Relative import due to https://github.com/rust-lang/cc-rs/issues/169
         .flag_if_supported("-Wno-unused-parameter")
         .flag_if_supported("-Wno-redundant-move")
         .flag_if_supported("-std=c++17")
