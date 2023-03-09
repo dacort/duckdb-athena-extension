@@ -6,7 +6,7 @@
 
 - Only the `default` database is supported
 - Not all data types are implemented yet
-- Only 1,000 results can be returned
+- 10,000 results are returned by default (use `maxrows=-1` to return everything)
 - Pushdown predicates are not supported
 
 ## Getting started
@@ -48,7 +48,7 @@ load 'build/debug/extension/duckdb-athena-extension/athena.duckdb_extension';
 select * from athena_scan('table_name', 's3://<bucket>/athena-results/);
 ```
 
-> **Warning**: All results will be returned from your table!
+> **Warning**: 10,000 results will be returned by default! Use `maxrows=-1` to return the entire table.
 
 ```
 D select * from athena_scan("amazon_reviews_parquet");
