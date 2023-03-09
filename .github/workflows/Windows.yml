@@ -37,7 +37,7 @@ jobs:
         run: |
           cd duckdb
           git checkout ${{ matrix.duckdb_version }}
-          cd duckdb-ext/duckdb
+          cd ../duckdb-ext/duckdb
           git checkout ${{ matrix.duckdb_version }}
 
       - name: Patch DuckDB with named parameter support

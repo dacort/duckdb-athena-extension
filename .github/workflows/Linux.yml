@@ -43,14 +43,14 @@ jobs:
         apt-get install -y -qq \
           build-essential \
           checkinstall \
-          clang-3.9 \
+          clang-5.0 \
           curl \
           g++-multilib \
           gcc-multilib \
           gettext \
           lib32readline6-dev \
           libc6-dev-i386 \
-          libclang-3.9-dev \
+          libclang-5.0-dev \
           libcurl4-gnutls-dev \
           libexpat1-dev \
           libffi-dev \
