@@ -21,7 +21,7 @@ jobs:
         arch: ['amd64', 'arm64']
 
     env:
-      OSX_BUILD_UNIVERSAL: 0
+      OSX_BUILD_UNIVERSAL: 1
       GEN: ninja
 
     steps:
