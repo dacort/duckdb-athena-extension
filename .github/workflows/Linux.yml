@@ -127,7 +127,7 @@ jobs:
         STATIC_LIBCPP: 1
         # TARGET_CC instead of CC: https://github.com/briansmith/ring/issues/578#issuecomment-510988473
         TARGET_CC: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-gcc' || '' }}
-        CXX: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-g++' || '' }}
+        TARGET_CXX: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-g++' || '' }}
       run: |
         make release
 
