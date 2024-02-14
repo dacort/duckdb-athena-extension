@@ -1,5 +1,5 @@
 name: macOS
-on: [push, pull_request,repository_dispatch]
+on: [push, pull_request]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.head_ref || '' }}-${{ github.base_ref || '' }}-${{ github.ref != 'refs/heads/main' || github.sha }}
   cancel-in-progress: true
@@ -42,15 +42,8 @@ jobs:
         run: |
           cd duckdb
           git checkout ${{ matrix.duckdb_version }}
-          cd duckdb-ext/duckdb
-          git checkout ${{ matrix.duckdb_version }}
-
-      - name: Patch DuckDB with named parameter support
-        run: |
-          cd duckdb
-          git apply ../duckdb-namedparams.patch
           cd ../duckdb-ext/duckdb
-          git apply ../../duckdb-namedparams.patch
+          git checkout ${{ matrix.duckdb_version }}
 
          # Build extension
       - name: Build extension
