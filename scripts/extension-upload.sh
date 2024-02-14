@@ -16,10 +16,12 @@ ext="build/release/extension/duckdb-athena-extension/$1.duckdb_extension"
 gzip < $ext > "$1.duckdb_extension.gz"
 
 # upload compressed extension binary to S3
+echo "Uploading extension binary to s3://$5/artifacts/$1/$2/$3/$4/$1.duckdb_extension.gz"
 aws s3 cp $1.duckdb_extension.gz s3://$5/artifacts/$1/$2/$3/$4/$1.duckdb_extension.gz
 
 if [ $6 = 'true' ]
 then
+  echo "Also copying to latest"
   aws s3 cp $1.duckdb_extension.gz s3://$5/artifacts/$1/latest/$3/$4/$1.duckdb_extension.gz
 fi
 # also uplo
