@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         # Add commits/tags to build against other DuckDB versions
-        duckdb_version: [ '<submodule_version>' ]
-        arch: ['amd64', 'arm64']
+        duckdb_version: ["<submodule_version>"]
+        arch: ["amd64", "arm64"]
 
     env:
       OSX_BUILD_UNIVERSAL: 1
@@ -28,14 +28,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          submodules: 'true'
+          submodules: "true"
 
       - name: Install Ninja
         run: brew install ninja
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.7'
+          python-version: "3.7"
 
       - name: Checkout DuckDB to version
         if: ${{ matrix.duckdb_version != '<submodule_version>'}}
@@ -45,7 +45,7 @@ jobs:
           cd ../duckdb-ext/duckdb
           git checkout ${{ matrix.duckdb_version }}
 
-         # Build extension
+        # Build extension
       - name: Build extension
         env:
           OSX_BUILD_AARCH64: ${{ matrix.arch == 'arm64' && 1 || 0 }}
@@ -55,7 +55,7 @@ jobs:
           make release
 
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
           aws-region: ${{ secrets.S3_REGION }}

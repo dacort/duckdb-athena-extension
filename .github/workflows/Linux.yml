@@ -20,138 +20,138 @@ jobs:
     strategy:
       matrix:
         # Add commits/tags to build against other DuckDB versions
-        duckdb_version: [ '<submodule_version>' ]
-        arch: ['linux_amd64', 'linux_arm64'] # , 'linux_amd64_gcc4'
+        duckdb_version: ["<submodule_version>"]
+        arch: ["linux_amd64", "linux_arm64"] # , 'linux_amd64_gcc4'
         include:
-          - arch: 'linux_amd64'
-            container: 'ubuntu:18.04'
-          - arch: 'linux_arm64'
-            container: 'ubuntu:18.04'
+          - arch: "linux_amd64"
+            container: "ubuntu:18.04"
+          - arch: "linux_arm64"
+            container: "ubuntu:18.04"
           # - arch: 'linux_amd64_gcc4'
           #   container: 'quay.io/pypa/manylinux2014_x86_64'
     env:
       GEN: ninja
 
     steps:
-    - name: Install required ubuntu packages
-      if: ${{ matrix.arch == 'linux_amd64' || matrix.arch == 'linux_arm64' }}
-      run: |
-        apt-get update -y -qq
-        apt-get install -y -qq software-properties-common
-        add-apt-repository ppa:git-core/ppa
-        apt-get update -y -qq
-        apt-get install -y -qq \
-          build-essential \
-          checkinstall \
-          clang-5.0 \
-          curl \
-          g++-multilib \
-          gcc-multilib \
-          gettext \
-          lib32readline6-dev \
-          libc6-dev-i386 \
-          libclang-5.0-dev \
-          libcurl4-gnutls-dev \
-          libexpat1-dev \
-          libffi-dev \
-          libssl-dev \
-          libssl-dev \
-          libz-dev \
-          make \
-          maven \
-          ninja-build \
-          openjdk-8-jdk \
-          openssh-client \
-          unixodbc-dev \
-          unzip \
-          wget \
-          zip
+      - name: Install required ubuntu packages
+        if: ${{ matrix.arch == 'linux_amd64' || matrix.arch == 'linux_arm64' }}
+        run: |
+          apt-get update -y -qq
+          apt-get install -y -qq software-properties-common
+          add-apt-repository ppa:git-core/ppa
+          apt-get update -y -qq
+          apt-get install -y -qq \
+            build-essential \
+            checkinstall \
+            clang-5.0 \
+            curl \
+            g++-multilib \
+            gcc-multilib \
+            gettext \
+            lib32readline6-dev \
+            libc6-dev-i386 \
+            libclang-5.0-dev \
+            libcurl4-gnutls-dev \
+            libexpat1-dev \
+            libffi-dev \
+            libssl-dev \
+            libssl-dev \
+            libz-dev \
+            make \
+            maven \
+            ninja-build \
+            openjdk-8-jdk \
+            openssh-client \
+            unixodbc-dev \
+            unzip \
+            wget \
+            zip
 
-    - name: Install required ubuntu packages
-      if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
-      run: |
-        yum install -y centos-release-scl llvm-toolset-7
-        echo /opt/rh/llvm-toolset-7/root/usr/bin >> $GITHUB_PATH
+      - name: Install required ubuntu packages
+        if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
+        run: |
+          yum install -y centos-release-scl llvm-toolset-7
+          echo /opt/rh/llvm-toolset-7/root/usr/bin >> $GITHUB_PATH
 
-    - name: Install latest nightly rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
+      - name: Install latest nightly rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
           toolchain: nightly
           override: true
           components: rustfmt, clippy
 
-    - name: Install Git 2.18.5
-      if: ${{ matrix.arch == 'linux_amd64' || matrix.arch == 'linux_arm64' }}
-      run: |
-        wget https://github.com/git/git/archive/refs/tags/v2.18.5.tar.gz
-        tar xvf v2.18.5.tar.gz
-        cd git-2.18.5
-        make
-        make prefix=/usr install
-        git --version
+      - name: Install Git 2.18.5
+        if: ${{ matrix.arch == 'linux_amd64' || matrix.arch == 'linux_arm64' }}
+        run: |
+          wget https://github.com/git/git/archive/refs/tags/v2.18.5.tar.gz
+          tar xvf v2.18.5.tar.gz
+          cd git-2.18.5
+          make
+          make prefix=/usr install
+          git --version
 
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        submodules: 'true'
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: "true"
 
-    - name: Checkout DuckDB to version
-      if: ${{ matrix.duckdb_version != '<submodule_version>'}}
-      run: |
-        cd duckdb
-        git checkout ${{ matrix.duckdb_version }}
-        cd ../duckdb-ext/duckdb
-        git checkout ${{ matrix.duckdb_version }}
+      - name: Checkout DuckDB to version
+        if: ${{ matrix.duckdb_version != '<submodule_version>'}}
+        run: |
+          cd duckdb
+          git checkout ${{ matrix.duckdb_version }}
+          cd ../duckdb-ext/duckdb
+          git checkout ${{ matrix.duckdb_version }}
 
-    - if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
-      uses: ./duckdb/.github/actions/centos_7_setup
-      with:
-        openssl: 0
+      - if: ${{ matrix.arch == 'linux_amd64_gcc4' }}
+        uses: ./duckdb/.github/actions/centos_7_setup
+        with:
+          openssl: 0
 
-    - if: ${{ matrix.arch == 'linux_amd64' || matrix.arch == 'linux_arm64' }}
-      uses: ./duckdb/.github/actions/ubuntu_18_setup
-      with:
-        aarch64_cross_compile: ${{ matrix.arch == 'linux_arm64' && 1 }}
+      - if: ${{ matrix.arch == 'linux_amd64' || matrix.arch == 'linux_arm64' }}
+        uses: ./duckdb/.github/actions/ubuntu_18_setup
+        with:
+          aarch64_cross_compile: ${{ matrix.arch == 'linux_arm64' && 1 }}
 
-      # Build extension
-    - name: Build extension
-      env:
-        GEN: ninja
-        STATIC_LIBCPP: 1
-        # TARGET_CC instead of CC: https://github.com/briansmith/ring/issues/578#issuecomment-510988473
-        TARGET_CC: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-gcc' || '' }}
-        TARGET_CXX: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-g++' || '' }}
-      run: |
-        make release
+        # Build extension
+      - name: Build extension
+        env:
+          GEN: ninja
+          STATIC_LIBCPP: 1
+          # TARGET_CC instead of CC: https://github.com/briansmith/ring/issues/578#issuecomment-510988473
+          TARGET_CC: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-gcc' || '' }}
+          TARGET_CXX: ${{ matrix.arch == 'linux_arm64' && 'aarch64-linux-gnu-g++' || '' }}
+        run: |
+          make release
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: ${{matrix.arch}}-extensions
-        path: |
-          build/release/extension/duckdb-athena-extension/athena.duckdb_extension
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.arch}}-extensions
+          path: |
+            build/release/extension/duckdb-athena-extension/athena.duckdb_extension
 
-    - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
-        aws-region: ${{ secrets.S3_REGION }}
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
+          aws-region: ${{ secrets.S3_REGION }}
 
-    - name: Deploy
-      env:
-        BUCKET_NAME: ${{ secrets.S3_BUCKET }}
-      run: |
-        git config --global --add safe.directory '*'
-        cd duckdb
-        git fetch --tags
-        export DUCKDB_VERSION=`git tag --points-at HEAD`
-        export DUCKDB_VERSION=${DUCKDB_VERSION:=`git log -1 --format=%h`}
-        cd ..
-        if [[ "$BUCKET_NAME" == "" ]] ; then
-          echo 'No bucket set, skipping'
-        elif [[ "$GITHUB_REF" =~ ^(refs/tags/v.+)$ ]] ; then
-          python3 -m pip install pip awscli
-          ./scripts/extension-upload.sh athena ${{ github.ref_name }} $DUCKDB_VERSION ${{matrix.arch}} $BUCKET_NAME true
-        elif [[ "$GITHUB_REF" =~ ^(refs/heads/main)$ ]] ; then
-          python3 -m pip install pip awscli
-          ./scripts/extension-upload.sh athena `git log -1 --format=%h` $DUCKDB_VERSION ${{matrix.arch}} $BUCKET_NAME false
-        fi
+      - name: Deploy
+        env:
+          BUCKET_NAME: ${{ secrets.S3_BUCKET }}
+        run: |
+          git config --global --add safe.directory '*'
+          cd duckdb
+          git fetch --tags
+          export DUCKDB_VERSION=`git tag --points-at HEAD`
+          export DUCKDB_VERSION=${DUCKDB_VERSION:=`git log -1 --format=%h`}
+          cd ..
+          if [[ "$BUCKET_NAME" == "" ]] ; then
+            echo 'No bucket set, skipping'
+          elif [[ "$GITHUB_REF" =~ ^(refs/tags/v.+)$ ]] ; then
+            python3 -m pip install pip awscli
+            ./scripts/extension-upload.sh athena ${{ github.ref_name }} $DUCKDB_VERSION ${{matrix.arch}} $BUCKET_NAME true
+          elif [[ "$GITHUB_REF" =~ ^(refs/heads/main)$ ]] ; then
+            python3 -m pip install pip awscli
+            ./scripts/extension-upload.sh athena `git log -1 --format=%h` $DUCKDB_VERSION ${{matrix.arch}} $BUCKET_NAME false
+          fi
