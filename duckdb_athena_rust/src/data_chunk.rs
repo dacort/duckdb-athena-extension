@@ -13,14 +13,12 @@
 // limitations under the License.
 
 use super::vector::{FlatVector, ListVector, StructVector};
-use crate::{
-    ffi::{
-        duckdb_create_data_chunk, duckdb_data_chunk, duckdb_data_chunk_get_size,
-        duckdb_data_chunk_get_vector, duckdb_data_chunk_set_size, duckdb_destroy_data_chunk,
-        duckdb_data_chunk_get_column_count,
-    },
-    LogicalType,
+use libduckdb_sys::{
+    duckdb_create_data_chunk, duckdb_data_chunk, duckdb_data_chunk_get_size,
+    duckdb_data_chunk_get_vector, duckdb_data_chunk_set_size, duckdb_destroy_data_chunk,
+    duckdb_data_chunk_get_column_count,
 };
+use crate::LogicalType;
 
 /// DataChunk in DuckDB.
 pub struct DataChunk {

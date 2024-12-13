@@ -7,7 +7,7 @@ defaults:
   run:
     shell: bash
 
-# TODO: Add rust, checkout duckdb-ext/duckdb
+# TODO: Add rust, checkout duckdb_athena_rust/duckdb
 
 jobs:
   linux:
@@ -100,7 +100,7 @@ jobs:
       run: |
         cd duckdb
         git checkout ${{ matrix.duckdb_version }}
-        cd ../duckdb-ext/duckdb
+        cd ../duckdb_athena_rust/duckdb
         git checkout ${{ matrix.duckdb_version }}
 
     - if: ${{ matrix.arch == 'linux_amd64_gcc4' }}

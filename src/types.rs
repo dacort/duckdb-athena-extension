@@ -1,7 +1,7 @@
 use std::{ffi::CString, slice};
 
-use duckdb_ext::ffi::duckdb_vector_size;
-use duckdb_ext::{DataChunk, Inserter, LogicalTypeId};
+use duckdb_athena_rust::duckdb_vector_size;
+use duckdb_athena_rust::{DataChunk, Inserter, LogicalTypeId};
 
 use crate::error::{Error, Result};
 

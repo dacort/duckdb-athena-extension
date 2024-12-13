@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use duckdb_ext::Database;
+use duckdb_athena_rust::Database;
 use std::ffi::c_char;
 use tokio::runtime::Runtime;
 
@@ -8,7 +8,7 @@ mod table_function;
 mod types;
 
 use crate::table_function::build_table_function_def;
-use duckdb_ext::ffi::{_duckdb_database, duckdb_library_version};
+use duckdb_athena_rust::{_duckdb_database, duckdb_library_version};
 use error::Result;
 
 lazy_static::lazy_static! {

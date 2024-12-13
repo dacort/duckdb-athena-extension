@@ -7,7 +7,7 @@ defaults:
   run:
     shell: bash
 
-# TODO: checkout duckdb-ext/duckdb
+# TODO: checkout duckdb_athena_rust/duckdb
 
 jobs:
   windows:
@@ -37,12 +37,12 @@ jobs:
         run: |
           cd duckdb
           git checkout ${{ matrix.duckdb_version }}
-          cd ../duckdb-ext/duckdb
+          cd ../duckdb_athena_rust/duckdb
           git checkout ${{ matrix.duckdb_version }}
 
       - name: Build extension
         run: |
-          dir duckdb-ext/duckdb/src/include
+          dir duckdb_athena_rust/duckdb/src/include
           make release
 
       - uses: actions/upload-artifact@v2

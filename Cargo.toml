@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-duckdb-ext = { path = "./duckdb-ext" }
+duckdb_athena_rust = { path = "./duckdb_athena_rust" }
 tokio = { version = "1.23.0", features=['full'] }
 aws-config = "0.54.1"
 aws-sdk-athena = "0.24.0"
