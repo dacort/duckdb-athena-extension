@@ -4,7 +4,7 @@
 duckdb_extension_load(athena
     SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}
     LOAD_TESTS
-    LINKED_LIBS "../../cargo/build/x86_64-unknown-linux-gnu/release/libduckdb_athena.a"
+    LINKED_LIBS "${CMAKE_CURRENT_BINARY_DIR}/libduckdb_athena.a"
 )
 
 # Any extra extensions that should be built
