@@ -10,7 +10,7 @@ namespace duckdb
     void AthenaExtension::Load(DuckDB &db)
     {
         // Call the Rust function to initialize the extension.
-        athena_init_rust(&db);
+        athena_init(&db);
     }
 
     std::string AthenaExtension::Name()
