@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::ffi::{duckdb_destroy_value, duckdb_get_varchar, duckdb_value};
+use libduckdb_sys::{duckdb_destroy_value, duckdb_get_varchar, duckdb_value};
 use std::ffi::CString;
 
 /// The Value object holds a single arbitrary value of any type that can be

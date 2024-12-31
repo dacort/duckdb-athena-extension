@@ -32,6 +32,8 @@ pub use value::Value;
 pub use vector::{FlatVector, Inserter, ListVector, StructVector, Vector};
 use std::mem::size_of;
 
+pub use libduckdb_sys::{duckdb_vector_size, duckdb_bind_info, duckdb_data_chunk, duckdb_free, duckdb_function_info, duckdb_init_info, _duckdb_database, duckdb_library_version};
+
 #[allow(clippy::all)]
 pub mod ffi {
     #![allow(non_upper_case_globals)]
@@ -40,11 +42,10 @@ pub mod ffi {
     #![allow(unused)]
     #![allow(improper_ctypes)]
     #![allow(clippy::upper_case_acronyms)]
-    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
 
 /// # Safety
 /// This function is obviously unsafe
 pub unsafe fn malloc_struct<T>() -> *mut T {
-    ffi::duckdb_malloc(size_of::<T>()).cast::<T>()
+    libduckdb_sys::duckdb_malloc(size_of::<T>()).cast::<T>()
 }

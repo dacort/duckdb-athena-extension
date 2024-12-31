@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::ffi::{duckdb_function_get_init_data, duckdb_function_get_bind_data, duckdb_function_info, duckdb_function_set_error};
+use libduckdb_sys::{duckdb_function_get_init_data, duckdb_function_get_bind_data, duckdb_function_info, duckdb_function_set_error};
 use crate::Error;
 
 /// UDF

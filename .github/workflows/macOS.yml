@@ -42,7 +42,7 @@ jobs:
         run: |
           cd duckdb
           git checkout ${{ matrix.duckdb_version }}
-          cd ../duckdb-ext/duckdb
+          cd ../duckdb_athena_rust/duckdb
           git checkout ${{ matrix.duckdb_version }}
 
          # Build extension

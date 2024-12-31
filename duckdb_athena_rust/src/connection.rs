@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::ffi::{duckdb_connection, duckdb_register_table_function};
+use libduckdb_sys::{duckdb_connection, duckdb_register_table_function};
 use crate::table_function::TableFunction;
 
 /// A connection to a database. This represents a (client) connection that can

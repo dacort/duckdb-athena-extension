@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use duckdb_ext::Database;
+use duckdb_athena_rust::Database;
 use std::ffi::c_char;
 use tokio::runtime::Runtime;
 
@@ -8,7 +8,7 @@ mod table_function;
 mod types;
 
 use crate::table_function::build_table_function_def;
-use duckdb_ext::ffi::{_duckdb_database, duckdb_library_version};
+use duckdb_athena_rust::{_duckdb_database, duckdb_library_version};
 use error::Result;
 
 lazy_static::lazy_static! {
@@ -20,7 +20,7 @@ lazy_static::lazy_static! {
 /// # Safety
 /// .
 #[no_mangle]
-pub unsafe extern "C" fn athena_init_rust(db: *mut _duckdb_database) {
+pub unsafe extern "C" fn athena_init(db: *mut _duckdb_database) {
     init(db).expect("init failed");
 }
 
@@ -34,6 +34,6 @@ unsafe fn init(db: *mut _duckdb_database) -> Result<()> {
 
 /// Version hook for DuckDB, indicates which version of DuckDB this extension was compiled against
 #[no_mangle]
-pub extern "C" fn athena_version_rust() -> *const c_char {
+pub extern "C" fn athena_version() -> *const c_char {
     unsafe { duckdb_library_version() }
 }

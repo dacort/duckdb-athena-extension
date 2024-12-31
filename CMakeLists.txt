@@ -15,14 +15,16 @@
 # Still need to use cmake to link to duckdb via `build_loadable_extension` macro.
 #
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.5)
 
 if (POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif ()
 
-project(athena_duckdb VERSION 0.3)
-set(EXTENSION_NAME athena)
+set(TARGET_NAME athena)
+project(${TARGET_NAME} VERSION 0.3)
+set(EXTENSION_NAME ${TARGET_NAME}_extension)
+set(LOADABLE_EXTENSION_NAME ${TARGET_NAME}_loadable_extension)
 
 if (APPLE)
   # POLICY CMP0042
@@ -47,7 +49,7 @@ include(FetchContent)
 FetchContent_Declare(
         Corrosion
         GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.3.2 # Optionally specify a commit hash, version tag or branch here
+        GIT_TAG v0.5 # Optionally specify a commit hash, version tag or branch here
 )
 set(BUILD_UNITTESTS FALSE) # Disable unit test build in duckdb
 
@@ -57,27 +59,37 @@ FetchContent_MakeAvailable(Corrosion)
 
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/duckdb/src/include)
+include_directories(src/include)
 
 # Now again for aarch64/arm64
 # set(Rust_CARGO_TARGET "aarch64-apple-darwin")
 # corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml)
 
-set(ALL_SOURCES src/extension.c src/extension.h)
+set(EXTENSION_SOURCES src/athena_extension.cpp src/include/athena_extension.hpp)
 
 SET(EXTENSION_STATIC_BUILD 1)
 set(PARAMETERS "-warnings")
-build_loadable_extension(${EXTENSION_NAME} ${PARAMETERS} ${ALL_SOURCES})
+build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
+build_loadable_extension(${TARGET_NAME} ${PARAMETERS} ${EXTENSION_SOURCES})
 
-set(LIB_NAME ${EXTENSION_NAME}_loadable_extension)
-
-set_target_properties(${LIB_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${LIB_NAME}
+set_target_properties(${EXTENSION_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(${EXTENSION_NAME}
+        "${CMAKE_CURRENT_BINARY_DIR}/libduckdb_athena.a"
+        duckdb_static
+)
+target_link_libraries(${LOADABLE_EXTENSION_NAME}
         "${CMAKE_CURRENT_BINARY_DIR}/libduckdb_athena.a"
         duckdb_static
 )
 
 if (APPLE)
-        target_link_libraries(${LIB_NAME}
+        target_link_libraries(${EXTENSION_NAME}
                 "-framework CoreFoundation"
                 "-framework Security")
 endif()
+
+install(
+  TARGETS ${EXTENSION_NAME}
+  EXPORT "${DUCKDB_EXPORT_SET}"
+  LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
+  ARCHIVE DESTINATION "${INSTALL_LIB_DIR}")

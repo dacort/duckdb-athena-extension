@@ -14,7 +14,7 @@
 
 use std::ffi::{c_void, CString};
 
-use crate::ffi::{
+use libduckdb_sys::{
     duckdb_bind_add_result_column, duckdb_bind_get_parameter, duckdb_bind_get_parameter_count,
     duckdb_bind_get_named_parameter,
     duckdb_bind_info, duckdb_bind_set_bind_data, duckdb_bind_set_cardinality,

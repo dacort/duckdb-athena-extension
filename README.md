@@ -15,7 +15,7 @@ The Athena extension is supported in DuckDB v0.7.0 and up. To install the extens
 
 ```
 > duckdb -unsigned
-v0.7.1 b00b93f0b1
+v1.1.1 af39bd0dcf
 D 
 ```
 
@@ -60,7 +60,7 @@ git clone https://github.com/dacort/duckdb-athena-extension.git --recurse-submod
 
 ```bash
 cd duckdb-athena-extension
-make release
+make
 ```
 
 - Start up duckdb with the `-unsigned` parameter and your desired AWS_REGION
@@ -70,7 +70,7 @@ AWS_REGION=us-east-1 build/debug/duckdb -unsigned
 ```
 
 ```bash
-v0.7.0 f7827396d7
+v1.1.1 af39bd0dcf
 Enter ".help" for usage hints.
 D 
 ```
@@ -78,13 +78,13 @@ D
 - Load the extension
 
 ```
-load 'build/debug/extension/duckdb-athena-extension/athena.duckdb_extension';
+load 'build/debug/extension/athena/athena.duckdb_extension';
 ```
 
 - Query a single table, also providing where S3 results are written to
 
 ```sql
-select * from athena_scan('table_name', 's3://<bucket>/athena-results/);
+select * from athena_scan('table_name', 's3://<bucket>/athena-results/');
 ```
 
 > **Warning**: 10,000 results will be returned by default! Use `maxrows=-1` to return the entire table.
@@ -112,5 +112,5 @@ Total execution time: 1307 millis
 
 ## Credits
 
-- Initial rust DuckDB Extension Framework: https://github.com/Mause/duckdb-extension-framework
+- Initial rust DuckDB Extension Framework: https://github.com/Mause/duckdb_extension-framework
 - Updated rust extension framework: https://github.com/eto-ai/lance/tree/main/integration/duckdb_lance

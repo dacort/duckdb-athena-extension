@@ -16,7 +16,7 @@ use std::any::Any;
 use std::ffi::CString;
 use std::slice;
 
-use crate::ffi::{
+use libduckdb_sys::{
     duckdb_list_entry, duckdb_list_vector_get_child, duckdb_list_vector_get_size,
     duckdb_list_vector_reserve, duckdb_list_vector_set_size, duckdb_struct_type_child_count,
     duckdb_struct_type_child_name, duckdb_struct_vector_get_child, duckdb_vector,

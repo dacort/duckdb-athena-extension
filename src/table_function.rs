@@ -24,14 +24,12 @@ use aws_sdk_athena::{
     Client as AthenaClient,
 };
 use aws_sdk_glue::Client as GlueClient;
-use duckdb_ext::table_function::{BindInfo, InitInfo, TableFunction};
-use duckdb_ext::{
-    ffi::{
-        duckdb_bind_info, duckdb_data_chunk, duckdb_free, duckdb_function_info, duckdb_init_info,
-    },
+use duckdb_athena_rust::table_function::{BindInfo, InitInfo, TableFunction};
+use duckdb_athena_rust::{
+    duckdb_bind_info, duckdb_data_chunk, duckdb_free, duckdb_function_info, duckdb_init_info,
     malloc_struct,
 };
-use duckdb_ext::{DataChunk, FunctionInfo, LogicalType, LogicalTypeId};
+use duckdb_athena_rust::{DataChunk, FunctionInfo, LogicalType, LogicalTypeId};
 
 use tokio::{runtime::Runtime, time::Duration};
 
@@ -137,7 +135,7 @@ unsafe extern "C" fn read_athena(info: duckdb_function_info, output: duckdb_data
     {
         Some(Ok(b)) => Some(b),
         Some(Err(e)) => {
-            info.set_error(duckdb_ext::Error::DuckDB(e.to_string()));
+            info.set_error(duckdb_athena_rust::Error::DuckDB(e.to_string()));
             return;
         }
         None => None,
@@ -276,7 +274,7 @@ unsafe extern "C" fn read_athena_bind(bind_info: duckdb_bind_info) {
             }
         }
         Err(err) => {
-            bind_info.set_error(duckdb_ext::Error::DuckDB(
+            bind_info.set_error(duckdb_athena_rust::Error::DuckDB(
                 err.into_service_error().to_string(),
             ));
             return;

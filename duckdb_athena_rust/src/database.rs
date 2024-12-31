@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::ffi::{duckdb_connect, duckdb_connection, duckdb_database, duckdb_state_DuckDBError};
+use libduckdb_sys::{duckdb_connect, duckdb_connection, duckdb_database, duckdb_state_DuckDBError};
 use crate::{Connection, Error, Result};
 
 pub struct Database {

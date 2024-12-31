@@ -15,7 +15,7 @@
 use std::ffi::{c_char, CString};
 use std::fmt::Debug;
 
-use crate::ffi::*;
+use libduckdb_sys::*;
 
 #[repr(u32)]
 #[derive(Debug, PartialEq, Eq)]
@@ -155,7 +155,7 @@ impl LogicalType {
     ///
     pub fn struct_type(fields: &[(&str, LogicalType)]) -> Self {
         let keys: Vec<CString> = fields.iter().map(|f| CString::new(f.0).unwrap()).collect();
-        let values: Vec<duckdb_logical_type> = fields.iter().map(|it| it.1.ptr).collect();
+        let mut values: Vec<duckdb_logical_type> = fields.iter().map(|it| it.1.ptr).collect();
         let name_ptrs = keys
             .iter()
             .map(|it| it.as_ptr())
@@ -164,9 +164,9 @@ impl LogicalType {
         unsafe {
             Self {
                 ptr: duckdb_create_struct_type(
-                    fields.len() as idx_t,
+                    values.as_mut_slice().as_mut_ptr(),
                     name_ptrs.as_slice().as_ptr().cast_mut(),
-                    values.as_slice().as_ptr(),
+                    fields.len() as idx_t,
                 ),
             }
         }
